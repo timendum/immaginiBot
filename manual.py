@@ -7,6 +7,7 @@ from bot import RedditBot
 
 
 def force(comment_id, image):
+    """Main function"""
     reddit = Reddit()
     comment = reddit.comment(comment_id)
     comment.body = image
