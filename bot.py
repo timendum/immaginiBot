@@ -5,7 +5,7 @@ import praw
 from praw.models import Comment
 
 from database import BotComment, KeywordCandidate, db, get_images
-from utils import ANIM_EXT, MAYBE_IMAGE, BoundedSet, GracefulDeath, DELETE_BODY_RE
+from utils import ANIM_EXT, MAYBE_IMAGE, BoundedSet, GracefulDeath, DELETE_BODY_RE, FORCE_TITLE_RE
 
 with open('body.txt', mode='rt', encoding='utf8') as fbody:
     BODY = fbody.read()
@@ -54,6 +54,23 @@ class RedditBot():
             print('\n!%s->%s!' % (comment_id, comment.id))
         db.commit()
 
+    def process_force(self, message):
+        """Force a reply to a comment"""
+        # find the bot sub, the one the bot mods
+        mainsubreddit = next(self._reddit.user.moderator_subreddits())
+        if message.author not in list(mainsubreddit.moderator()):
+            # only from other mods
+            return False
+        match = FORCE_TITLE_RE.fullmatch(message.subject)
+        if not match:
+            return False
+        comment = self._reddit.comment(match.group(1))
+        comment.body = message.body
+        print('@%s' % message.fullname, end='')
+        images, _ = self.process_comment(comment)
+        if images:
+            message.reply('%s\n\n%s' % (comment.permalink, str(images)))
+
     def process_inbox(self, message):
         """Process different inbox messages: delete"""
         if not message.author:
@@ -63,6 +80,8 @@ class RedditBot():
         if message.subject == 'delete':
             message.mark_read()
             self.process_delete(message.body, message.author.name)
+        if message.subject.startswith('force '):
+            self.process_force(message)
         else:
             print('\nIgnored message: %s' % message.id)
 
@@ -74,7 +93,7 @@ class RedditBot():
                 if sighandler.received_kill:
                     break
                 subreddit = self._reddit.user.me().multireddits()[0]
-                comment_stream = subreddit.stream.comments(pause_after=0)
+                comment_stream = subreddit.stream.comments(pause_after=2)
                 inbox_stream = self._reddit.inbox.stream(pause_after=0)
                 for comment in comment_stream:
                     if sighandler.received_kill:

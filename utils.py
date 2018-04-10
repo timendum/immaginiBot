@@ -14,6 +14,7 @@ STATIC_RE = re.compile(r'\.(%s)$' % ('|'.join(STATIC_EXT)), re.IGNORECASE)
 MAYBE_IMAGE = re.compile(r'(?:^|\s|\^)(\w+)\.(%s)\b' % ('|'.join(ALL_EXT)), re.IGNORECASE)
 
 DELETE_BODY_RE = re.compile(r'^delete ([a-z1-9]{7,8})$')
+FORCE_TITLE_RE = re.compile(r'^force ([a-z1-9]{7,8})$')
 
 class GracefulDeath:  # pylint: disable=R0903
     """Catch signals to allow graceful shutdown."""
