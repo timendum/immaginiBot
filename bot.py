@@ -1,4 +1,6 @@
 """Manage Reddit bot"""
+import logging
+from logging.handlers import TimedRotatingFileHandler
 import random
 
 import praw
@@ -10,13 +12,22 @@ from utils import ANIM_EXT, MAYBE_IMAGE, BoundedSet, GracefulDeath, DELETE_BODY_
 with open('body.txt', mode='rt', encoding='utf8') as fbody:
     BODY = fbody.read()
 
+
 class RedditBot():
     """Bot to monitor comments and inbox"""
+
     def __init__(self):
         self._reddit = praw.Reddit()
         self.username = self._reddit.user.me().name
         self.seen_comments = BoundedSet(150)
         self.seen_messages = BoundedSet(150)
+        # logging
+        self._logger = logging.getLogger(__name__)
+        self._logger.setLevel(logging.DEBUG)
+        fileh = TimedRotatingFileHandler('immaginiBot.log', when='midnight', backupCount=1)
+        fileh.terminator = ''
+        fileh.setLevel(logging.DEBUG)
+        self._logger.addHandler(fileh)
 
     def process_comment(self, comment):
         """Check for matches in a comment and reply"""
@@ -35,7 +46,7 @@ class RedditBot():
             body = BODY.format(
                 images='\n\n'.join(images), username=self.username, comment_id=comment.id)
             reply = comment.reply(body)
-            print('\n@%s->%s@' % (comment.id, reply.id))
+            self._logger.info('\nCommento %s -> %s', comment.id, reply.id)
             db.add(BotComment(reply))
         if images or candidate:
             db.commit()
@@ -51,7 +62,7 @@ class RedditBot():
         for comment in comments:
             self._reddit.comment(comment.id).delete()
             comment.deleted = True
-            print('\n!%s->%s!' % (comment_id, comment.id))
+            self._logger.info('\nDeleted %s -> %s', comment_id, comment.id)
         db.commit()
 
     def process_force(self, message):
@@ -66,7 +77,7 @@ class RedditBot():
             return False
         comment = self._reddit.comment(match.group(1))
         comment.body = message.body
-        print('@%s' % message.fullname, end='')
+        self._logger.info('\nForce %s', message.fullname)
         images, _ = self.process_comment(comment)
         if images:
             message.reply('%s\n\n%s' % (comment.permalink, str(images)))
@@ -83,7 +94,7 @@ class RedditBot():
         if message.subject.startswith('force '):
             self.process_force(message)
         else:
-            print('\nIgnored message: %s' % message.id)
+            self._logger.info('\nIgnored message: %s', message.id)
 
     def stream_all(self):
         """Monitor comments and inbox"""
@@ -101,7 +112,7 @@ class RedditBot():
                     if comment:
                         if comment.id in self.seen_comments:
                             continue
-                        print('.', end='', flush=True)
+                        self._logger.debug('.')
                         self.seen_comments.add(comment.id)
                         self.process_comment(comment)
                     else:
@@ -114,7 +125,7 @@ class RedditBot():
                                 continue
                             break
                         if message:
-                            print(',', end='', flush=True)
+                            self._logger.debug(',')
                             self.seen_messages.add(message.id)
                             self.process_inbox(message)
             except Exception as expt:  # pylint: disable=W0703
@@ -122,6 +133,7 @@ class RedditBot():
                 continue
         if sighandler.received_kill:
             print('\nCtrl+c found, extiting')
+
 
 def main():
     """Perform bot actions"""
