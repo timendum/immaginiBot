@@ -129,10 +129,10 @@ class RedditBot():
                             self.seen_messages.add(message.id)
                             self.process_inbox(message)
             except Exception as expt:  # pylint: disable=W0703
-                print('\n', expt)
+                self._logger.exception(expt)
                 continue
         if sighandler.received_kill:
-            print('\nCtrl+c found, extiting')
+            self._logger.info('\nCtrl+c found, extiting')
 
 
 def main():
