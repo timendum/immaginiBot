@@ -38,7 +38,7 @@ class RedditBot():
             consoleh = logging.StreamHandler(sys.stdout)
             consoleh.terminator = ''
             self._logger.addHandler(consoleh)
-            self._logger.debug('No logging.json, reverting to sysout')
+            self._logger.debug('No logging.json, reverting to sysout\n')
 
 
     def process_comment(self, comment):
