@@ -9,7 +9,8 @@ import praw
 from praw.models import Comment
 
 from database import BotComment, KeywordCandidate, db, get_images
-from utils import ANIM_EXT, MAYBE_IMAGE, BoundedSet, GracefulDeath, DELETE_BODY_RE, FORCE_TITLE_RE
+from utils import (ANIM_EXT, DELETE_BODY_RE, FORCE_TITLE_RE, MAYBE_IMAGE,
+                   BoundedSet, GracefulDeath)
 
 with open('body.txt', mode='rt', encoding='utf8') as fbody:
     BODY = fbody.read()
@@ -32,8 +33,8 @@ class RedditBot():
                 logDigConfig(json.load(logconfigf))
             self._logger = logging.getLogger(self.__class__.__name__)
         except IOError:
-        self._logger = logging.getLogger(__name__)
-        self._logger.setLevel(logging.DEBUG)
+            self._logger = logging.getLogger(__name__)
+            self._logger.setLevel(logging.DEBUG)
             consoleh = logging.StreamHandler(sys.stdout)
             consoleh.terminator = ''
             self._logger.addHandler(consoleh)
