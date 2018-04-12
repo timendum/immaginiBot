@@ -1,7 +1,9 @@
 """Manage Reddit bot"""
+import json
 import logging
-from logging.handlers import TimedRotatingFileHandler
+from logging.config import dictConfig as logDigConfig
 import random
+import sys
 
 import praw
 from praw.models import Comment
@@ -22,12 +24,21 @@ class RedditBot():
         self.seen_comments = BoundedSet(150)
         self.seen_messages = BoundedSet(150)
         # logging
+        self.__init_logger()
+
+    def __init_logger(self):
+        try:
+            with open("logging.json", "r", encoding="utf-8") as logconfigf:
+                logDigConfig(json.load(logconfigf))
+            self._logger = logging.getLogger(self.__class__.__name__)
+        except IOError:
         self._logger = logging.getLogger(__name__)
         self._logger.setLevel(logging.DEBUG)
-        fileh = TimedRotatingFileHandler('immaginiBot.log', when='midnight', backupCount=1)
-        fileh.terminator = ''
-        fileh.setLevel(logging.DEBUG)
-        self._logger.addHandler(fileh)
+            consoleh = logging.StreamHandler(sys.stdout)
+            consoleh.terminator = ''
+            self._logger.addHandler(consoleh)
+            self._logger.debug('No logging.json, reverting to sysout')
+
 
     def process_comment(self, comment):
         """Check for matches in a comment and reply"""
