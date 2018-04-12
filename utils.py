@@ -2,7 +2,7 @@
 import re
 import signal
 
-from praw.models.util import BoundedSet # pylint: disable=W0611
+from praw.models.util import BoundedSet  # pylint: disable=W0611
 
 STATIC_EXT = ['jpeg', 'jpg', 'png']
 ANIM_EXT = ['gif', 'avi', 'gifv']
@@ -16,6 +16,7 @@ MAYBE_IMAGE = re.compile(r'[$\n].*(?:^|\s|\^)(\w+)\.(%s)\b' % ('|'.join(ALL_EXT)
 
 DELETE_BODY_RE = re.compile(r'^delete ([a-z1-9]{7,8})$')
 FORCE_TITLE_RE = re.compile(r'^force ([a-z1-9]{7,8})$')
+
 
 class GracefulDeath:  # pylint: disable=R0903
     """Catch signals to allow graceful shutdown."""
