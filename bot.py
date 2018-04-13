@@ -100,8 +100,8 @@ class RedditBot():
             return
         if isinstance(message, Comment):
             return
+        message.mark_read()
         if message.subject == 'delete':
-            message.mark_read()
             self.process_delete(message.body, message.author.name)
         if message.subject.startswith('force '):
             self.process_force(message)
