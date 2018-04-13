@@ -1,14 +1,16 @@
+"""This module allow to import data in database"""
 from database import Keyword, Image, db
 
 import toml
 
 
 def import_source():
+    """Parse `images.toml` and update databases"""
     with open('images.toml', 'rt', encoding='utf8') as infile:
         newdefinitions = toml.load(infile)
     # images section
     for keyw, images in newdefinitions['images'].items():
-        if type(images) is list:
+        if isinstance(images, list):
             for image in images:
                 db.merge(Image(image, keyw))
         else:
