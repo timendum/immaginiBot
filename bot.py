@@ -89,7 +89,7 @@ class RedditBot():
             self._logger.info('\nNo comment id: %s', message.id)
             return False
         comment = self._reddit.comment(match.group(1))
-        if not comment:
+        if not comment or comment.deleted or comment.removed:
             self._logger.info('\nComment not found: %s', message.subject)
             return False
         comment.body = message.body
