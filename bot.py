@@ -82,17 +82,23 @@ class RedditBot():
         # find the bot sub, the one the bot mods
         mainsubreddit = next(self._reddit.user.moderator_subreddits())
         if message.author not in list(mainsubreddit.moderator()):
-            # only from other mods
+            self._logger.info('\nNot from mod: %s', message.id)
             return False
         match = FORCE_TITLE_RE.fullmatch(message.subject)
         if not match:
+            self._logger.info('\nNo comment id: %s', message.id)
             return False
         comment = self._reddit.comment(match.group(1))
+        if not comment:
+            self._logger.info('\nComment not found: %s', message.subject)
+            return False
         comment.body = message.body
         self._logger.info('\nForce %s', message.fullname)
         images, _ = self.process_comment(comment)
         if images:
             message.reply('%s\n\n%s' % (comment.permalink, str(images)))
+        else:
+            self._logger.info('\nNo image found: %s', comment.body)
 
     def process_inbox(self, message):
         """Process different inbox messages: delete"""
