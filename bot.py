@@ -36,9 +36,8 @@ class RedditBot():
             self._logger = logging.getLogger(__name__)
             self._logger.setLevel(logging.DEBUG)
             consoleh = logging.StreamHandler(sys.stdout)
-            consoleh.terminator = ''
             self._logger.addHandler(consoleh)
-            self._logger.debug('No logging.json, reverting to sysout\n')
+            self._logger.debug('No logging.json, reverting to sysout')
 
 
     def process_comment(self, comment):
@@ -58,7 +57,7 @@ class RedditBot():
             body = BODY.format(
                 images='\n\n'.join(images), username=self.username, comment_id=comment.id)
             reply = comment.reply(body)
-            self._logger.info('\nCommento %s -> %s', comment.id, reply.id)
+            self._logger.info('New comment %s -> %s', comment.id, reply.id)
             db.add(BotComment(reply))
         if images or candidate:
             db.commit()
@@ -74,7 +73,7 @@ class RedditBot():
         for comment in comments:
             self._reddit.comment(comment.id).delete()
             comment.deleted = True
-            self._logger.info('\nDeleted %s -> %s', comment_id, comment.id)
+            self._logger.info('Deleted %s -> %s', comment_id, comment.id)
         db.commit()
 
     def process_force(self, message):
@@ -82,23 +81,23 @@ class RedditBot():
         # find the bot sub, the one the bot mods
         mainsubreddit = next(self._reddit.user.moderator_subreddits())
         if message.author not in list(mainsubreddit.moderator()):
-            self._logger.info('\nNot from mod: %s', message.id)
+            self._logger.info('Not from mod: %s', message.id)
             return False
         match = FORCE_TITLE_RE.fullmatch(message.subject)
         if not match:
-            self._logger.info('\nNo comment id: %s', message.id)
+            self._logger.info('No comment id: %s', message.id)
             return False
         comment = self._reddit.comment(match.group(1))
         if not comment or comment.deleted or comment.removed:
-            self._logger.info('\nComment not found: %s', message.subject)
+            self._logger.info('Comment not found: %s', message.subject)
             return False
         comment.body = message.body
-        self._logger.info('\nForce %s', message.fullname)
+        self._logger.info('Force %s', message.fullname)
         images, _ = self.process_comment(comment)
         if images:
             message.reply('%s\n\n%s' % (comment.permalink, str(images)))
         else:
-            self._logger.info('\nNo image found: %s', comment.body)
+            self._logger.info('No image found: %s', comment.body)
 
     def process_inbox(self, message):
         """Process different inbox messages: delete"""
@@ -112,7 +111,7 @@ class RedditBot():
         if message.subject.startswith('force '):
             self.process_force(message)
         else:
-            self._logger.info('\nIgnored message: %s', message.id)
+            self._logger.info('Ignored message: %s', message.id)
 
     def stream_all(self):
         """Monitor comments and inbox"""
@@ -130,7 +129,6 @@ class RedditBot():
                     if comment:
                         if comment.id in self.seen_comments:
                             continue
-                        self._logger.debug('.')
                         self.seen_comments.add(comment.id)
                         self.process_comment(comment)
                     else:
@@ -143,14 +141,15 @@ class RedditBot():
                                 continue
                             break
                         if message:
-                            self._logger.debug(',')
                             self.seen_messages.add(message.id)
                             self.process_inbox(message)
+                        else:
+                            self._logger.debug('One full loop done')
             except Exception as expt:  # pylint: disable=W0703
                 self._logger.exception(expt)
                 continue
         if sighandler.received_kill:
-            self._logger.info('\nCtrl+c found, extiting')
+            self._logger.info('Ctrl+c found, extiting')
 
 
 def main():
