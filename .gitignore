@@ -108,5 +108,5 @@ tcl
 
 
 ### Project ###
-images.sqlite3
+*.sqlite3
 export.md
