@@ -9,8 +9,7 @@ import praw
 from praw.models import Comment
 
 from database import BotComment, KeywordCandidate, db, get_images
-from utils import (ANIM_EXT, DELETE_BODY_RE, FORCE_TITLE_RE, MAYBE_IMAGE,
-                   BoundedSet, GracefulDeath)
+from utils import (ANIM_EXT, DELETE_BODY_RE, FORCE_TITLE_RE, MAYBE_IMAGE, BoundedSet, GracefulDeath)
 
 with open('body.txt', mode='rt', encoding='utf8') as fbody:
     BODY = fbody.read()
@@ -39,7 +38,6 @@ class RedditBot():
             self._logger.addHandler(consoleh)
             self._logger.debug('No logging.json, reverting to sysout')
 
-
     def process_comment(self, comment):
         """Check for matches in a comment and reply"""
         matches = MAYBE_IMAGE.findall(comment.body)
@@ -51,7 +49,8 @@ class RedditBot():
             if not candiates:
                 candidate = KeywordCandidate.get_or_create(word)
                 candidate.hits = candidate.hits + 1
-                self._logger.info('New immage canditate %s on comment %s', candidate.keyword, comment.id)
+                self._logger.info('New immage canditate %s on comment %s', candidate.keyword,
+                                  comment.id)
                 continue
             imageurl = random.choice(candiates)
             images.append('[%s.%s](%s)' % (word, match[1], imageurl))
