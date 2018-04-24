@@ -1,5 +1,5 @@
 """This module allow to import data in database"""
-from database import Keyword, Image, db
+from database import Keyword, Image, db, KeywordCandidate
 
 import toml
 
@@ -25,4 +25,15 @@ def import_source():
     db.commit()
 
 
-import_source()
+def delete_imported():
+    """Delete imported candidates, KeywordCandidate where Keyword exists with the same keyword"""
+    candidates = db.query(KeywordCandidate,
+                          Keyword).filter(Keyword.keyword == KeywordCandidate.keyword)
+    for candidate, _ in candidates:
+        db.delete(candidate)
+    db.commit()
+
+
+if __name__ == "__main__":
+    import_source()
+    delete_imported()
