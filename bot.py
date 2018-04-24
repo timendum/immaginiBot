@@ -46,14 +46,15 @@ class RedditBot():
         images = []
         candidate = None
         for match in matches:
-            candiates = get_images(match[0], match[1] in ANIM_EXT)
+            word = match[0].lower()
+            candiates = get_images(word, match[1] in ANIM_EXT)
             if not candiates:
-                candidate = KeywordCandidate.get_or_create(match[0])
+                candidate = KeywordCandidate.get_or_create(word)
                 candidate.hits = candidate.hits + 1
                 self._logger.info('New immage canditate: %s', candiate.keyword)
                 continue
             imageurl = random.choice(candiates)
-            images.append('[%s.%s](%s)' % (match[0], match[1], imageurl))
+            images.append('[%s.%s](%s)' % (word, match[1], imageurl))
         if images:
             body = BODY.format(
                 images='\n\n'.join(images), username=self.username, comment_id=comment.id)
