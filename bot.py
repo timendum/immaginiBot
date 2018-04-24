@@ -51,7 +51,7 @@ class RedditBot():
             if not candiates:
                 candidate = KeywordCandidate.get_or_create(word)
                 candidate.hits = candidate.hits + 1
-                self._logger.info('New immage canditate: %s', candiate.keyword)
+                self._logger.info('New immage canditate %s on comment %s', candidate.keyword, comment.id)
                 continue
             imageurl = random.choice(candiates)
             images.append('[%s.%s](%s)' % (word, match[1], imageurl))
