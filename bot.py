@@ -7,6 +7,7 @@ import sys
 
 import praw
 from praw.models import Comment
+from prawcore.exceptions import PrawcoreException
 
 from database import BotComment, KeywordCandidate, db, get_images
 from utils import (ANIM_EXT, DELETE_BODY_RE, FORCE_TITLE_RE, MAYBE_IMAGE, BoundedSet, GracefulDeath)
@@ -146,6 +147,8 @@ class RedditBot():
                             self.process_inbox(message)
                         else:
                             self._logger.debug('One full loop done')
+            except PrawcoreException as prawexcept:
+                self._logger.debug(prawexcept)
             except Exception as expt:  # pylint: disable=W0703
                 self._logger.exception(expt)
                 continue
