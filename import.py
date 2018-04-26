@@ -1,7 +1,10 @@
 """This module allow to import data in database"""
-from database import Keyword, Image, db, KeywordCandidate
+import sys
 
+import sqlalchemy
 import toml
+
+from database import Image, Keyword, KeywordCandidate, db
 
 
 def import_source():
@@ -34,6 +37,21 @@ def delete_imported():
     db.commit()
 
 
+def truncate_images():
+    """Remove all keywords"""
+    try:
+        db.query(Image).delete()
+        db.query(Keyword).delete()
+        db.commit()
+    except sqlalchemy.exc.SQLAlchemyError as sqlexc:
+        db.rollback()
+        print(sqlexc)
+
+
 if __name__ == "__main__":
+    if len(sys.argv) >= 1 and sys.argv[1] == 'd':
+        print('Deleting')
+        truncate_images()
     import_source()
     delete_imported()
+    print('Imported')
