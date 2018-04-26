@@ -34,9 +34,11 @@ def _export(add_hidden=False):
             ofile.write('|\n')
         return ofile.getvalue()
 
+
 def export_md(add_hidden=False):
     with open('export.md', mode='wt', encoding='utf8') as ofile:
         ofile.write(_export(add_hidden))
+
 
 if __name__ == "__main__":
     export_md()
