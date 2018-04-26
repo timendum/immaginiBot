@@ -41,6 +41,7 @@ class KeywordCandidate(Base):  # pylint: disable=R0903
     def __init__(self, keyword):
         self.keyword = keyword
         self.hits = 0
+        self.ignored = False
 
     @classmethod
     def get_or_create(cls, keyword):

@@ -49,6 +49,8 @@ class RedditBot():
             candiates = get_images(word, match[1] in ANIM_EXT)
             if not candiates:
                 candidate = KeywordCandidate.get_or_create(word)
+                if candidate.ignored:
+                    continue
                 candidate.hits = candidate.hits + 1
                 self._logger.info('New immage canditate %s on comment %s', candidate.keyword,
                                   comment.id)
