@@ -25,6 +25,9 @@ def import_source():
     # hidden section
     for keyw, hidden in newdefinitions['hidden'].items():
         db.query(Keyword).get(keyw).hidden = hidden
+    # ignored
+    for keyw, ignored in newdefinitions['ignored'].items():
+        KeywordCandidate.get_or_create(keyw).ignored = ignored
     db.commit()
 
 
