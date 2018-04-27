@@ -119,4 +119,3 @@ class BotComment(Base):  # pylint: disable=R0903
 
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-    #print(get_images('occhiolino', True))
