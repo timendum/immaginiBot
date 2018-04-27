@@ -117,6 +117,32 @@ class RedditBot():
         else:
             self._logger.info('Ignored message: %s', message.id)
 
+    def _stream_inbox(self, inbox_stream, sighandler):
+        """Process all inbox message and returns"""
+        for message in inbox_stream:
+            if sighandler.received_kill:
+                break
+            if not message:
+                self._logger.debug('One full loop done')
+                return
+            if message.id in self.seen_messages:
+                continue
+            self.seen_messages.add(message.id)
+            self.process_inbox(message)
+
+    def _stream_comments(self, comment_stream, inbox_stream, sighandler):
+        """Process all comments and all inbox messages"""
+        for comment in comment_stream:
+            if sighandler.received_kill:
+                break
+            if comment:
+                if comment.id in self.seen_comments:
+                    continue
+                self.seen_comments.add(comment.id)
+                self.process_comment(comment)
+            else:
+                self._stream_inbox(inbox_stream, sighandler)
+
     def stream_all(self):
         """Monitor comments and inbox"""
         sighandler = GracefulDeath()
@@ -127,28 +153,7 @@ class RedditBot():
                 subreddit = self._reddit.user.me().multireddits()[0]
                 comment_stream = subreddit.stream.comments(pause_after=2)
                 inbox_stream = self._reddit.inbox.stream(pause_after=0)
-                for comment in comment_stream:
-                    if sighandler.received_kill:
-                        break
-                    if comment:
-                        if comment.id in self.seen_comments:
-                            continue
-                        self.seen_comments.add(comment.id)
-                        self.process_comment(comment)
-                    else:
-                        # process inbox
-                        while True:
-                            message = next(inbox_stream)
-                            if not message:
-                                break
-                            if message.id in self.seen_messages:
-                                continue
-                            break
-                        if message:
-                            self.seen_messages.add(message.id)
-                            self.process_inbox(message)
-                        else:
-                            self._logger.debug('One full loop done')
+                self._stream_comments(comment_stream, inbox_stream, sighandler)
             except PrawcoreException as prawexcept:
                 self._logger.debug(prawexcept)
             except Exception as expt:  # pylint: disable=W0703
