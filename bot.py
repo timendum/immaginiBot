@@ -65,7 +65,7 @@ class RedditBot():
             db.add(BotComment(reply))
         if images or candidate:
             db.commit()
-        return images, candidate
+        return images + [candidate]
 
     def process_delete(self, body, author):
         """If body and author match, delete child comments"""
@@ -97,11 +97,12 @@ class RedditBot():
             return False
         comment.body = message.body
         self._logger.info('Force %s', message.fullname)
-        images, _ = self.process_comment(comment)
+        images = self.process_comment(comment)
         if images:
             message.reply('%s\n\n%s' % (comment.permalink, str(images)))
         else:
             self._logger.info('No image found: %s', comment.body)
+        return bool(images)
 
     def process_inbox(self, message):
         """Process different inbox messages: delete"""
