@@ -1,4 +1,5 @@
 """ORM utilities"""
+import datetime
 from typing import Any  # pylint: disable=W0611
 
 from sqlalchemy import (create_engine, Column, String, Boolean, Index, Integer)
@@ -32,15 +33,17 @@ class Keyword(Base):  # pylint: disable=R0903
 
 class KeywordCandidate(Base):  # pylint: disable=R0903
     """ORM bean for new keywords candidate"""
-    __tablename__ = "canidates"
+    __tablename__ = "candidates"
 
     keyword = Column(String(100), primary_key=True)
     hits = Column(Integer)
+    last_hit = Column(Integer)
     ignored = Column(Boolean)
 
     def __init__(self, keyword):
         self.keyword = keyword
         self.hits = 0
+        self.last_hit = int(datetime.datetime.now().timestamp())
         self.ignored = False
 
     @classmethod
@@ -50,6 +53,8 @@ class KeywordCandidate(Base):  # pylint: disable=R0903
         if not entry:
             entry = KeywordCandidate(keyword)
             db.add(entry)
+        else:
+            entry.last_hit = int(datetime.datetime.now().timestamp())
         return entry
 
 
