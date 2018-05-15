@@ -9,7 +9,7 @@ from sqlalchemy import distinct
 from database import Image, Keyword, db
 
 
-def _export(add_hidden):
+def export_md(add_hidden):
     """Export database to markdown"""
     imagesets = [key[0] for key in db.query(distinct(Image.imageset)).all()]
     imagesets = sorted(imagesets)
@@ -37,17 +37,17 @@ def _export(add_hidden):
         return ofile.getvalue()
 
 
-def export_md(add_hidden=True):
+def export_md_file(add_hidden=True):
     """Export images database to a markdown file"""
     with open('export.md', mode='wt', encoding='utf8') as ofile:
-        ofile.write(_export(add_hidden))
+        ofile.write(export_md(add_hidden))
 
 def export_reddit(add_hidden=False):
     """Export images database to Reddit"""
     reddit = Reddit()
     mainsubreddit = next(reddit.user.moderator_subreddits())
-    mainsubreddit.submit('Export ' + date.today().isoformat(), _export(add_hidden))
+    mainsubreddit.submit('Export ' + date.today().isoformat(), export_md(add_hidden))
 
 
 if __name__ == "__main__":
-    export_md()
+    export_md_file(True)
