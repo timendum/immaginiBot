@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 import json
 import logging
 from logging.config import dictConfig as logDigConfig
+import os
 import random
 import sys
 
@@ -14,7 +15,7 @@ from database import BotComment, KeywordCandidate, db, get_images
 import export
 from utils import (ANIM_EXT, DELETE_BODY_RE, FORCE_TITLE_RE, MAYBE_IMAGE, BoundedSet, GracefulDeath)
 
-with open('body.txt', mode='rt', encoding='utf8') as fbody:
+with open(os.path.join('templates','body.txt'), mode='rt', encoding='utf8') as fbody:
     BODY = fbody.read()
 del fbody
 
@@ -38,7 +39,7 @@ class RedditBot():
 
     def __init_logger(self):
         try:
-            with open("log/logging.json", "r", encoding="utf-8") as logconfigf:
+            with open(os.path.join("log", "logging.json"), "r", encoding="utf-8") as logconfigf:
                 logDigConfig(json.load(logconfigf))
             self._logger = logging.getLogger(self.__class__.__name__)
         except IOError:
@@ -184,7 +185,7 @@ class RedditBot():
         previous_post = None
         if existing_posts and existing_posts[0] and existing_posts[0].stickied:
             previous_post = existing_posts[0]
-        with open('export.txt', mode='rt', encoding='utf8') as fexport:
+        with open(os.path.join('templates', 'export.txt'), mode='rt', encoding='utf8') as fexport:
             body = fexport.read()
         body = body.format(username=me.name, tabella=export_md, ora=datetime.now().isoformat())
         if previous_post and not previous_post.archived:

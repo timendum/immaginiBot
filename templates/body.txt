@@ -1,0 +1,9 @@
+{images}
+
+---
+
+^(*Questo bot è ancora in prova*)
+^|
+^(*Dimmi cosa ne pensi mandandomi un PM*)
+^|
+^*[Cancellami](https://reddit.com/message/compose/?to={username}&subject=delete&message=delete%20{comment_id})*
