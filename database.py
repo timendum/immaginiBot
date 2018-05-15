@@ -8,7 +8,7 @@ from sqlalchemy.orm import sessionmaker
 
 from utils import ANIM_RE
 
-engine = create_engine("sqlite:///images.sqlite3")  # pylint: disable=C0103
+engine = create_engine("sqlite:///db/images.sqlite3")  # pylint: disable=C0103
 
 Base = declarative_base()  # type: Any # pylint: disable=C0103
 Session = sessionmaker(bind=engine)  # pylint: disable=C0103
