@@ -153,6 +153,7 @@ class RedditBot():
                 self.process_comment(comment)
             else:
                 self._stream_inbox(inbox_stream, sighandler)
+                self.export_to_profile()
 
     def stream_all(self):
         """Monitor comments and inbox"""
