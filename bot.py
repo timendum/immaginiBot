@@ -1,4 +1,5 @@
 """Manage Reddit bot"""
+from datetime import datetime, timedelta
 import json
 import logging
 from logging.config import dictConfig as logDigConfig
@@ -10,10 +11,12 @@ from praw.models import Comment
 from prawcore.exceptions import PrawcoreException
 
 from database import BotComment, KeywordCandidate, db, get_images
+import export
 from utils import (ANIM_EXT, DELETE_BODY_RE, FORCE_TITLE_RE, MAYBE_IMAGE, BoundedSet, GracefulDeath)
 
 with open('body.txt', mode='rt', encoding='utf8') as fbody:
     BODY = fbody.read()
+del fbody
 
 
 class RedditBot():
@@ -24,8 +27,14 @@ class RedditBot():
         self.username = self._reddit.user.me().name
         self.seen_comments = BoundedSet(150)
         self.seen_messages = BoundedSet(150)
+        self._next_export = self._calculate_next_export()
         # logging
         self.__init_logger()
+
+    @staticmethod
+    def _calculate_next_export():
+        """Return next midnight"""
+        return datetime.now().replace(hour=0, minute=0) + timedelta(days=1)
 
     def __init_logger(self):
         try:
@@ -162,6 +171,33 @@ class RedditBot():
                 continue
         if sighandler.received_kill:
             self._logger.info('Ctrl+c found, extiting')
+
+    def export_to_profile(self):
+        """Export the database every midnight"""
+        if datetime.now() < self._next_export:
+            return
+        self._next_export = self._calculate_next_export()
+        me = self._reddit.user.me()
+        subreddit = self._reddit.subreddit(me.subreddit['display_name'])
+        export_md = export.export_md(add_hidden=False)
+        existing_posts = list(subreddit.hot())
+        previous_post = None
+        if existing_posts and existing_posts[0] and existing_posts[0].stickied:
+            previous_post = existing_posts[0]
+        with open('export.txt', mode='rt', encoding='utf8') as fexport:
+            body = fexport.read()
+        body = body.format(username=me.name, tabella=export_md, ora=datetime.now().isoformat())
+        if previous_post and not previous_post.archived:
+            previous_post.edit(body)
+            self._logger.info('Export: updated %s', previous_post.permalink)
+        elif previous_post and previous_post.archived:
+            previous_post.mod.sticky(state=False)
+            body = body + '\n\n [Istruzioni precedenti](' + previous_post.permalink + ')'
+            self._logger.info('Export: archived %s', previous_post.permalink)
+        if not previous_post or previous_post.archived:
+            submission = subreddit.submit('Istruzioni', selftext=body)
+            submission.mod.sticky(state=True)
+            self._logger.info('Export: new post %s', previous_post.permalink)
 
 
 def main():

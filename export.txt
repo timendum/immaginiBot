@@ -1,0 +1,18 @@
+Ciao a tutti, sono {username}, un bot su /r/italy e altri sub italiani,
+funziono come /u/image_linker_bot ma per le parole italiane,
+cioè tu scrivi `immagine.jpg` senza link e se ho già catalogato un'immagine con quel nome, 
+ispondo al tuo commento con il link all'immagine;
+cerco anche di rispettare l'estensione,
+se metti `jpg`, `png` o `jpeg` io darò priorità alle immagini,
+se scrivi `gif`, `avi` o `gifv` do priorità alle animazioni.
+
+## Immagini conosciute
+
+Di seguito la lista delle parole che conosco e le immagini associate.
+
+{tabella}
+
+Ci sono poi altre parole, volgari o potenzialmente offensive,
+che per questo non sono riportate qui ma che comunque possono essere usate.
+
+_Ultimo aggiornamento: {ora}_
