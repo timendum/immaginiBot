@@ -15,7 +15,7 @@ from database import BotComment, KeywordCandidate, db, get_images
 import export
 from utils import (ANIM_EXT, DELETE_BODY_RE, FORCE_TITLE_RE, MAYBE_IMAGE, BoundedSet, GracefulDeath)
 
-with open(os.path.join('templates','body.txt'), mode='rt', encoding='utf8') as fbody:
+with open(os.path.join('templates', 'body.txt'), mode='rt', encoding='utf8') as fbody:
     BODY = fbody.read()
 del fbody
 
@@ -71,7 +71,7 @@ class RedditBot():
             body = BODY.format(
                 images='\n\n'.join(images), username=self.username, comment_id=comment.id)
             reply = comment.reply(body)
-            self._logger.info('New comment %s -> %s', comment.id, reply.id)
+            self._logger.info('New comment %s -> %s', comment.permalink, reply.id)
             db.add(BotComment(reply))
         if images or candidate:
             db.commit()
@@ -106,7 +106,7 @@ class RedditBot():
             self._logger.info('Comment not valid: %s', message.subject)
             return False
         comment.body = message.body
-        self._logger.info('Force %s', message.fullname)
+        self._logger.info('Force PM %s', message.fullname)
         images = self.process_comment(comment)
         if images:
             message.reply('%s\n\n%s' % (comment.permalink, str(images)))
@@ -178,7 +178,7 @@ class RedditBot():
         if datetime.now() < self._next_export:
             return
         self._next_export = self._calculate_next_export()
-        me = self._reddit.user.me()
+        me = self._reddit.user.me() # pylint: disable=C0103
         subreddit = self._reddit.subreddit(me.subreddit['display_name'])
         export_md = export.export_md(add_hidden=False)
         existing_posts = list(subreddit.hot())
