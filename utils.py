@@ -14,8 +14,8 @@ STATIC_RE = re.compile(r'\.(%s)$' % ('|'.join(STATIC_EXT)), re.IGNORECASE)
 MAYBE_IMAGE = re.compile(r'^(?:[^>\n].*(?:\s|\^))?(\w+)\.(%s)\b' % ('|'.join(ALL_EXT)),
                          re.IGNORECASE + re.MULTILINE)
 
-DELETE_BODY_RE = re.compile(r'^delete ([a-z1-9]{7,8})$')
-FORCE_TITLE_RE = re.compile(r'^force ([a-z1-9]{7,8})$')
+DELETE_BODY_RE = re.compile(r'^delete ([a-z0-9]{7,8})$')
+FORCE_TITLE_RE = re.compile(r'^force ([a-z0-9]{7,8})$')
 
 
 class GracefulDeath:  # pylint: disable=R0903
