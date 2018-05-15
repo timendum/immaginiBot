@@ -38,7 +38,7 @@ class RedditBot():
 
     def __init_logger(self):
         try:
-            with open("logging.json", "r", encoding="utf-8") as logconfigf:
+            with open("log/logging.json", "r", encoding="utf-8") as logconfigf:
                 logDigConfig(json.load(logconfigf))
             self._logger = logging.getLogger(self.__class__.__name__)
         except IOError:
