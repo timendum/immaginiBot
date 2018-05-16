@@ -54,6 +54,9 @@ class RedditBot():
         matches = MAYBE_IMAGE.findall(comment.body)
         images = []
         candidate = None
+        if matches and BotComment.get_by_parent(comment.id, comment.author.name):
+            # already processed
+            return None
         for match in matches:
             word = match[0].lower()
             candiates = get_images(word, match[1] in ANIM_EXT)
