@@ -5,7 +5,7 @@ import signal
 from praw.models.util import BoundedSet  # pylint: disable=W0611
 
 STATIC_EXT = ['jpeg', 'jpg', 'png']
-ANIM_EXT = ['gif', 'avi', 'gifv']
+ANIM_EXT = ['gif', 'avi', 'gifv', 'mp4']
 ALL_EXT = STATIC_EXT + ANIM_EXT
 
 ANIM_RE = re.compile(r'\.(%s)$' % ('|'.join(ANIM_EXT)), re.IGNORECASE)
