@@ -50,11 +50,14 @@ def truncate_images():
         db.rollback()
         print(sqlexc)
 
-
-if __name__ == "__main__":
+def main():
+    """Import source and delete imported"""
     if len(sys.argv) > 1 and sys.argv[1] == 'd':
         print('Deleting')
         truncate_images()
     import_source()
     delete_imported()
     print('Imported')
+
+if __name__ == "__main__":
+    main()
