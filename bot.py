@@ -5,7 +5,9 @@ import logging
 from logging.config import dictConfig as logDigConfig
 import os
 import random
+import re
 import sys
+import unicodedata
 
 import praw
 from praw.models import Comment
@@ -18,6 +20,8 @@ from utils import (ANIM_EXT, DELETE_BODY_RE, FORCE_TITLE_RE, MAYBE_IMAGE, Bounde
 with open(os.path.join('templates', 'body.txt'), mode='rt', encoding='utf8') as fbody:
     BODY = fbody.read()
 del fbody
+
+ONLY_WORDS = re.compile('[^a-z]')
 
 
 class RedditBot():
@@ -58,7 +62,9 @@ class RedditBot():
             # already processed
             return None
         for match in matches:
-            word = match[0].lower()
+            word = unicodedata.normalize('NFD', match[0]).encode('ascii', 'ignore').decode('utf8')
+            word = word.lower()
+            word = ONLY_WORDS.sub('', word)
             candiates = get_images(word, match[1] in ANIM_EXT)
             if not candiates:
                 candidate = KeywordCandidate.get_or_create(word)
@@ -182,7 +188,7 @@ class RedditBot():
         if datetime.now() < self._next_export:
             return
         self._next_export = self._calculate_next_export()
-        me = self._reddit.user.me() # pylint: disable=C0103
+        me = self._reddit.user.me()  # pylint: disable=C0103
         subreddit = self._reddit.subreddit(me.subreddit['display_name'])
         export_md = export.export_md(add_hidden=False)
         existing_posts = list(subreddit.hot())
