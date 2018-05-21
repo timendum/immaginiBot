@@ -72,7 +72,7 @@ class RedditBot():
                     continue
                 candidate.hits = candidate.hits + 1
                 self._logger.info('New immage canditate %s on comment %s', candidate.keyword,
-                                  comment.id)
+                                  comment.permalink)
                 continue
             imageurl = random.choice(candiates)
             images.append('[%s.%s](%s)' % (word, match[1], imageurl))
