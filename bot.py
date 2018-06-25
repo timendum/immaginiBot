@@ -71,7 +71,7 @@ class RedditBot():
                 if candidate.ignored:
                     continue
                 candidate.hits = candidate.hits + 1
-                self._logger.info('New immage canditate %s on comment %s', candidate.keyword,
+                self._logger.info('Canditate found "%s" on comment %s', candidate.keyword,
                                   comment.permalink)
                 continue
             imageurl = random.choice(candiates)
@@ -80,7 +80,7 @@ class RedditBot():
             body = BODY.format(
                 images='\n\n'.join(images), username=self.username, comment_id=comment.id)
             reply = comment.reply(body)
-            self._logger.info('New comment %s -> %s', comment.permalink, reply.id)
+            self._logger.info('Posted comment: %s -> %s', comment.permalink, reply.id)
             db.add(BotComment(reply))
         if images or candidate:
             db.commit()
