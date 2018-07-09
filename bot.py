@@ -209,6 +209,24 @@ class RedditBot():
             submission = subreddit.submit('Istruzioni', selftext=body)
             submission.mod.sticky(state=True)
             self._logger.info('Export: new post %s', previous_post.permalink)
+        self.export_to_subreddit()
+
+    def export_to_subreddit(self):
+        """Export the subreddit"""
+        subreddit = next(self._reddit.user.moderator_subreddits())
+        body = export.export_md(add_hidden=True)
+        existing_posts = list(subreddit.hot())
+        previous_post = None
+        if existing_posts and existing_posts[0] and existing_posts[0].stickied:
+            previous_post = existing_posts[0]
+        if previous_post and not previous_post.archived:
+            previous_post.edit(body)
+        elif previous_post and previous_post.archived:
+            previous_post.mod.sticky(state=False)
+        if not previous_post or previous_post.archived:
+            submission = subreddit.submit('Export full', selftext=body)
+            submission.mod.sticky(state=True)
+            self._logger.info('Export full: new post %s', previous_post.permalink)
 
 
 def main():
