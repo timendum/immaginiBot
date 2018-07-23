@@ -118,7 +118,7 @@ class RedditBot():
             return False
         comment.body = message.body
         self._logger.info('Force PM %s', message.fullname)
-        images = self.process_comment(comment, template=BODY_FORCE)
+        images = self.process_comment(comment, BODY_FORCE)
         if images:
             message.reply('%s\n\n%s' % (comment.permalink, '\n\n'.join(images)))
         else:
