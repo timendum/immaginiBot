@@ -19,6 +19,8 @@ from utils import (ANIM_EXT, DELETE_BODY_RE, FORCE_TITLE_RE, MAYBE_IMAGE, Bounde
 
 with open(os.path.join('templates', 'body.txt'), mode='rt', encoding='utf8') as fbody:
     BODY = fbody.read()
+with open(os.path.join('templates', 'force.txt'), mode='rt', encoding='utf8') as fbody:
+    BODY_FORCE = fbody.read()
 del fbody
 
 ONLY_WORDS = re.compile('[^a-z]')
@@ -53,7 +55,7 @@ class RedditBot():
             self._logger.addHandler(consoleh)
             self._logger.debug('No logging.json, reverting to sysout')
 
-    def process_comment(self, comment):
+    def process_comment(self, comment, template=BODY):
         """Check for matches in a comment and reply"""
         matches = MAYBE_IMAGE.findall(comment.body)
         images = []
@@ -77,14 +79,14 @@ class RedditBot():
             imageurl = random.choice(candiates)
             images.append('[%s.%s](%s)' % (word, match[1], imageurl))
         if images:
-            body = BODY.format(
+            body = template.format(
                 images='\n\n'.join(images), username=self.username, comment_id=comment.id)
             reply = comment.reply(body)
             self._logger.info('Posted comment: %s -> %s', comment.permalink, reply.id)
             db.add(BotComment(reply))
         if images or candidate:
             db.commit()
-        return images + [candidate]
+        return images
 
     def process_delete(self, body, author):
         """If body and author match, delete child comments"""
@@ -116,9 +118,9 @@ class RedditBot():
             return False
         comment.body = message.body
         self._logger.info('Force PM %s', message.fullname)
-        images = self.process_comment(comment)
+        images = self.process_comment(comment, BODY_FORCE)
         if images:
-            message.reply('%s\n\n%s' % (comment.permalink, str(images)))
+            message.reply('%s\n\n%s' % (comment.permalink, '\n\n'.join(images)))
         else:
             self._logger.info('No image found: %s', comment.body)
         return bool(images)
