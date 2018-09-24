@@ -134,7 +134,7 @@ class RedditBot():
         message.mark_read()
         if message.subject == 'delete':
             self.process_delete(message.body, message.author.name)
-        elif message.subject.startswith('force '):
+        elif message.subject.lower().startswith('force '):
             self.process_force(message)
         else:
             self._logger.info('Ignored message: %s', message.id)
