@@ -35,6 +35,8 @@ class RedditBot():
         self.seen_comments = BoundedSet(150)
         self.seen_messages = BoundedSet(150)
         self._next_export = self._calculate_next_export()
+        self._mainsubreddit = next(self._reddit.user.moderator_subreddits())
+        self._creator = self._mainsubreddit.moderator()[0]  # type: praw.model.Redditor
         # logging
         self.__init_logger()
 
@@ -104,8 +106,7 @@ class RedditBot():
     def process_force(self, message):
         """Force a reply to a comment"""
         # find the bot sub, the one the bot mods
-        mainsubreddit = next(self._reddit.user.moderator_subreddits())
-        if message.author not in list(mainsubreddit.moderator()):
+        if message.author not in list(self._mainsubreddit.moderator()):
             self._logger.info('Not from mod: %s', message.id)
             return False
         match = FORCE_TITLE_RE.fullmatch(message.subject)
@@ -130,14 +131,19 @@ class RedditBot():
         if not message.author:
             return
         if isinstance(message, Comment):
-            return
+            if message.subject == 'comment reply':
+                return
+            else:
+                self._logger.info('Username mention: %s', message.context)
         message.mark_read()
         if message.subject == 'delete':
             self.process_delete(message.body, message.author.name)
         elif message.subject.lower().startswith('force '):
             self.process_force(message)
         else:
-            self._logger.info('Ignored message: %s', message.id)
+            # Forward to creator
+            self._creator.message(
+                'FW from %s: %s' % (message.author.name, message.subject), message=message.body)
 
     def _stream_inbox(self, inbox_stream, sighandler):
         """Process all inbox message and returns"""
