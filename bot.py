@@ -131,7 +131,7 @@ class RedditBot():
         if not message.author:
             return
         if isinstance(message, Comment):
-            if message.subject not ('comment reply', 'post reply'):
+            if message.subject not in ('comment reply', 'post reply'):
                 self._logger.info('Username mention: %s', message.context)
             return
         message.mark_read()
