@@ -131,9 +131,9 @@ class RedditBot():
         if not message.author:
             return
         if isinstance(message, Comment):
-            if message.subject not in ('comment reply', 'post reply'):
-                self._logger.info('Username mention: %s', message.context)
-            return
+            if message.subject in ('comment reply', 'post reply'):
+                return
+            self._logger.info('Username mention: %s', message.context)
         message.mark_read()
         if message.subject == 'delete':
             self.process_delete(message.body, message.author.name)
