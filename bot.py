@@ -121,7 +121,7 @@ class RedditBot():
         self._logger.info('Force PM %s', message.fullname)
         images = self.process_comment(comment, BODY_FORCE)
         if images:
-            message.reply('%s\n\n%s' % (comment.permalink, '\n\n'.join(images)))
+            message.reply('[Commento](%s)\n\n%s' % (comment.permalink, '\n\n'.join(images)))
         else:
             self._logger.info('No image found: %s', comment.body)
         return bool(images)
