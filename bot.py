@@ -37,6 +37,7 @@ class RedditBot():
         self._next_export = self._calculate_next_export()
         self._mainsubreddit = next(self._reddit.user.moderator_subreddits())
         self._creator = self._mainsubreddit.moderator()[0]  # type: praw.model.Redditor
+        self._mods = list(self._mainsubreddit.moderator())  # type: praw.model.Redditor
         # logging
         self.__init_logger()
 
@@ -62,7 +63,7 @@ class RedditBot():
         matches = MAYBE_IMAGE.findall(comment.body)
         images = []
         candidate = None
-        if matches and BotComment.get_by_parent(comment.id, comment.author.name):
+        if matches and BotComment.get_by_parent(comment.id):
             # already processed
             return None
         for match in matches:
@@ -96,17 +97,18 @@ class RedditBot():
         if not match:
             return
         comment_id = match.group(1)
-        comments = BotComment.get_by_parent(comment_id, author)
-        for comment in comments:
-            self._reddit.comment(comment.id).delete()
-            comment.deleted = True
-            self._logger.info('Deleted %s -> %s', comment_id, comment.id)
+        comment = BotComment.get_by_parent(comment_id)
+        if author != comment.parent_author and author not in self._mods:
+            return
+        self._reddit.comment(comment.id).delete()
+        comment.deleted = True
+        self._logger.info('Deleted %s -> %s', comment_id, comment.id)
         db.commit()
 
     def process_force(self, message):
         """Force a reply to a comment"""
         # find the bot sub, the one the bot mods
-        if message.author not in list(self._mainsubreddit.moderator()):
+        if message.author not in self._mods:
             self._logger.info('Not from mod: %s', message.id)
             return False
         match = FORCE_TITLE_RE.fullmatch(message.subject)

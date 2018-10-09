@@ -113,13 +113,12 @@ class BotComment(Base):  # pylint: disable=R0903
         self.deleted = False
 
     @classmethod
-    def get_by_parent(cls, parent_id, parent_author):
+    def get_by_parent(cls, parent_id):
         """Find all active comments by parent_id and parent_author"""
         query = db.query(cls)
         query = query.filter_by(parent_id=parent_id)
-        query = query.filter_by(parent_author=parent_author)
         query = query.filter_by(deleted=False)
-        return query.all()
+        return query.first()
 
 
 if __name__ == "__main__":
