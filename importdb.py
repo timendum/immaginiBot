@@ -12,12 +12,21 @@ def import_source():
     with open('images.toml', 'rt', encoding='utf8') as infile:
         newdefinitions = toml.load(infile)
     # images section
+    urls = set()
     for keyw, images in newdefinitions['images'].items():
         if isinstance(images, list):
             for image in images:
                 db.merge(Image(image, keyw))
+                if image in urls:
+                    print('Duplicate: ', image)
+                else:
+                    urls.add(image)
         else:
             db.merge(Image(images, keyw))
+            if images in urls:
+                print('Duplicate: ', images)
+            else:
+                urls.add(images)
         db.merge(Keyword(keyw, keyw))
     # alias section
     for keyw, kalias in newdefinitions['alias'].items():
