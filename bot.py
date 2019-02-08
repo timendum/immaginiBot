@@ -70,7 +70,7 @@ class RedditBot():
             word = unicodedata.normalize('NFD', match[0]).encode('ascii', 'ignore').decode('utf8')
             word = word.lower()
             word = ONLY_WORDS.sub('', word)
-            candiates = get_images(word, match[1] in ANIM_EXT)
+            candiates = get_images(word, match[1].lower() in ANIM_EXT)
             if not candiates:
                 candidate = KeywordCandidate.get_or_create(word)
                 if candidate.ignored:
