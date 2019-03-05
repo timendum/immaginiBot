@@ -76,7 +76,8 @@ class RedditBot():
                 if fuzzy_word:
                     self._logger.info('Fuzzy %s -> %s', word, fuzzy_word)
                     if len(matches) == 1:
-                        return self.process_comment(fuzzy_word + '.' + match[1] , BODY_FORCE)
+                        comment.body = fuzzy_word + '.' + match[1]
+                        return self.process_comment(comment, BODY_FORCE)
                     else:
                         candiates = get_images(fuzzy_word, match[1].lower() in ANIM_EXT)
             if not candiates:
