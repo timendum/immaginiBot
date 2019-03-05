@@ -2,6 +2,7 @@
 import datetime
 from typing import Any  # pylint: disable=W0611
 
+from fuzzywuzzy import process as processfuzz
 from sqlalchemy import (create_engine, Column, String, Boolean, Index, Integer)
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -92,6 +93,12 @@ def get_images(word: str, animated=None):
             images = images.filter(Image.animated != animated)
     return images.all()
 
+def get_fuzzy_images(word: str):
+    keywords = [k.keyword for k in db.query(Keyword).all()]
+    keyword, score = processfuzz.extractOne(word, keywords)
+    if score > 93:
+        return keyword
+    return None
 
 class BotComment(Base):  # pylint: disable=R0903
     """ORM bean for the Keyword"""

@@ -13,7 +13,7 @@ import praw
 from praw.models import Comment
 from prawcore.exceptions import PrawcoreException
 
-from database import BotComment, KeywordCandidate, db, get_images
+from database import BotComment, KeywordCandidate, db, get_images, get_fuzzy_images
 import export
 from utils import (ANIM_EXT, DELETE_BODY_RE, FORCE_TITLE_RE, MAYBE_IMAGE, BoundedSet, GracefulDeath)
 
@@ -71,6 +71,14 @@ class RedditBot():
             word = word.lower()
             word = ONLY_WORDS.sub('', word)
             candiates = get_images(word, match[1].lower() in ANIM_EXT)
+            if not candiates:
+                fuzzy_word = get_fuzzy_images(word)
+                if fuzzy_word:
+                    self._logger.info('Fuzzy %s -> %s', word, fuzzy_word)
+                    if len(matches) == 1:
+                        return self.process_comment(fuzzy_word + '.' + match[1] , BODY_FORCE)
+                    else:
+                        candiates = get_images(fuzzy_word, match[1].lower() in ANIM_EXT)
             if not candiates:
                 candidate = KeywordCandidate.get_or_create(word)
                 if candidate.ignored:
