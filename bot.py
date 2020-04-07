@@ -147,7 +147,7 @@ class RedditBot():
             self._logger.info('Username mention: %s', message.context)
             message.mark_read()
             self._creator.message(
-                'Username mention from %s' % message.author.name, message="\n\n".join([message.context, message.body])
+                'Username mention from %s' % message.author.name, message="\n\n".join([message.context, message.body]))
             return
         message.mark_read()
         if message.subject == 'delete':
