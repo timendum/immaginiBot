@@ -235,9 +235,8 @@ class RedditBot():
 
     def export_to_subreddit(self):
         """Export the subreddit"""
-        subreddit = next(self._reddit.user.moderator_subreddits())
         body = export.export_md(add_hidden=True)
-        existing_posts = list(subreddit.hot())
+        existing_posts = list(self._mainsubreddit.hot())
         previous_post = None
         if existing_posts and existing_posts[0] and existing_posts[0].stickied:
             previous_post = existing_posts[0]
@@ -246,7 +245,7 @@ class RedditBot():
         elif previous_post and previous_post.archived:
             previous_post.mod.sticky(state=False)
         if not previous_post or previous_post.archived:
-            submission = subreddit.submit('Export full', selftext=body)
+            submission = self._mainsubreddit.submit('Export full', selftext=body)
             submission.mod.sticky(state=True)
             self._logger.info('Export full: new post %s', previous_post.permalink)
 
