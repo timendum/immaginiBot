@@ -35,7 +35,7 @@ class RedditBot():
         self.seen_comments = BoundedSet(150)
         self.seen_messages = BoundedSet(150)
         self._next_export = self._calculate_next_export()
-        self._mainsubreddit = next(self._reddit.user.moderator_subreddits())
+        self._mainsubreddit = self._reddit.user.me().moderated()[0]
         self._creator = self._mainsubreddit.moderator()[0]  # type: praw.model.Redditor
         self._mods = list(self._mainsubreddit.moderator())  # type: praw.model.Redditor
         # logging
