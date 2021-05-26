@@ -233,6 +233,7 @@ class RedditBot():
         if not previous_post or previous_post.archived:
             submission = subreddit.submit(TITLE, selftext=body)
             submission.mod.sticky(state=True)
+            submission.mod.lock()
             self._logger.info('Export: new post %s', previous_post.permalink)
         self.export_to_subreddit()
 
@@ -250,6 +251,7 @@ class RedditBot():
         if not previous_post or previous_post.archived:
             submission = self._mainsubreddit.submit('Export full', selftext=body)
             submission.mod.sticky(state=True)
+            submission.mod.lock()
             self._logger.info('Export full: new post %s', previous_post.permalink)
 
 
