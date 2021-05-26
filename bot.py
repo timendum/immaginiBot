@@ -207,16 +207,19 @@ class RedditBot():
 
     def export_to_profile(self):
         """Export the database every midnight"""
+        TITLE = 'Istruzioni'
         if datetime.now() < self._next_export:
             return
         self._next_export = self._calculate_next_export()
         me = self._reddit.user.me()  # pylint: disable=C0103
         subreddit = self._reddit.subreddit(me.subreddit['display_name'])
         export_md = export.export_md(add_hidden=False)
-        existing_posts = list(subreddit.hot())
+        posts = list(subreddit.hot())
         previous_post = None
-        if existing_posts and existing_posts[0] and existing_posts[0].stickied:
-            previous_post = existing_posts[0]
+        if posts and posts[0] and posts[0].stickied and posts.title = TITLE:
+            previous_post = posts[0]
+        elif len(posts) > 1 and posts[1] and posts[1].stickied and posts.title = TITLE:
+            previous_post = posts[1]
         with open(os.path.join('templates', 'export.txt'), mode='rt', encoding='utf8') as fexport:
             body = fexport.read()
         body = body.format(username=me.name, tabella=export_md, ora=datetime.now().isoformat())
@@ -228,7 +231,7 @@ class RedditBot():
             body = body + '\n\n [Istruzioni precedenti](' + previous_post.permalink + ')'
             self._logger.info('Export: archived %s', previous_post.permalink)
         if not previous_post or previous_post.archived:
-            submission = subreddit.submit('Istruzioni', selftext=body)
+            submission = subreddit.submit(TITLE, selftext=body)
             submission.mod.sticky(state=True)
             self._logger.info('Export: new post %s', previous_post.permalink)
         self.export_to_subreddit()
