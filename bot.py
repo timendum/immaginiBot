@@ -138,16 +138,16 @@ class RedditBot():
         return bool(images)
 
     def process_inbox(self, message):
-        """Process different inbox messages: delete"""
+        """Process different inbox messages: fw or delete"""
         if not message.author:
             return
         if isinstance(message, Comment):
-            if message.subject in ('comment reply', 'post reply'):
+            if message.subject in ('comment reply'):
                 return
             self._logger.info('Username mention: %s', message.context)
             message.mark_read()
             self._creator.message(
-                'Username mention from %s' % message.author.name, message="\n\n".join([message.context, message.body]))
+                'FW from ' + message.author.name + ': ' + message.subject, message="\n\n".join([message.context, message.body]))
             return
         message.mark_read()
         if message.subject == 'delete':
