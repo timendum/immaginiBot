@@ -216,9 +216,9 @@ class RedditBot():
         export_md = export.export_md(add_hidden=False)
         posts = list(subreddit.hot())
         previous_post = None
-        if posts and posts[0] and posts[0].stickied and posts.title == TITLE:
+        if posts and posts[0] and posts[0].stickied and posts[0].title == TITLE:
             previous_post = posts[0]
-        elif len(posts) > 1 and posts[1] and posts[1].stickied and posts.title == TITLE:
+        elif len(posts) > 1 and posts[1] and posts[1].stickied and posts[1].title == TITLE:
             previous_post = posts[1]
         with open(os.path.join('templates', 'export.txt'), mode='rt', encoding='utf8') as fexport:
             body = fexport.read()
