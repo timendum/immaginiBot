@@ -212,7 +212,7 @@ class RedditBot():
             return
         self._next_export = self._calculate_next_export()
         me = self._reddit.user.me()  # pylint: disable=C0103
-        subreddit = self._reddit.subreddit(me.subreddit['display_name'])
+        subreddit = self._reddit.subreddit(me.subreddit.display_name)
         export_md = export.export_md(add_hidden=False)
         posts = list(subreddit.hot())
         previous_post = None
@@ -227,12 +227,12 @@ class RedditBot():
             previous_post.edit(body)
             self._logger.info('Export: updated %s', previous_post.permalink)
         elif previous_post and previous_post.archived:
-            previous_post.mod.sticky(state=False)
+            self._reddit.user.pin(previous_post, state=False)
             body = body + '\n\n [Istruzioni precedenti](' + previous_post.permalink + ')'
             self._logger.info('Export: archived %s', previous_post.permalink)
         if not previous_post or previous_post.archived:
             submission = subreddit.submit(TITLE, selftext=body)
-            submission.mod.sticky(state=True)
+            self._reddit.user.pin(submission, state=True)
             submission.mod.lock()
             self._logger.info('Export: new post %s', previous_post.permalink)
         self.export_to_subreddit()
