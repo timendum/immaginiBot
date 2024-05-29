@@ -30,7 +30,7 @@ class RedditBot():
     """Bot to monitor comments and inbox"""
 
     def __init__(self):
-        self._reddit = praw.Reddit()
+        self._reddit = praw.Reddit(client_secret=None)
         self.username = self._reddit.user.me().name
         self.seen_comments = BoundedSet(150)
         self.seen_messages = BoundedSet(150)
