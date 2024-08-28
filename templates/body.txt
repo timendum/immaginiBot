@@ -1,9 +1,0 @@
-{images}
-
----
-
-*[^(Informazioni)](/u/{username}/about/sticky)*
-^|
-*^(Dimmi cosa ne pensi) [^(mandandomi) ^(un) ^(PM)](https://reddit.com/message/compose/?to={username}&subject=Info)*
-^|
-^*[Cancellami](https://reddit.com/message/compose/?to={username}&subject=delete&message=delete%20{comment_id})*

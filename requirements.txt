@@ -1,6 +1,0 @@
-imgurpython==1.1.7
-praw==7.6.1
-SQLAlchemy==1.4.44
-toml==0.10.2
-fuzzywuzzy==0.18.0
-python-Levenshtein-wheels==0.13.2

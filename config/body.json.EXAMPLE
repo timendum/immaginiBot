@@ -1,0 +1,54 @@
+{
+    "document": [
+        {
+            "e": "par",
+            "c": [
+                {
+                    "e": "link",
+                    "t": "{image_title}",
+                    "u": "{image_url}",
+                    "f": [
+                        [
+                            0,
+                            0,
+                            "<LEN>"
+                        ]
+                    ]
+                }
+            ]
+        },
+        {
+            "e": "img",
+            "id": "{image_id}"
+        },
+        {
+            "e": "par",
+            "c": [
+                {
+                    "e": "link",
+                    "t": "Send me a PM",
+                    "u": "https://reddit.com/message/compose/?to={username}&subject=Info",
+                    "f": [
+                        [
+                            2,
+                            0,
+                            12
+                        ]
+                    ]
+                },
+                {
+                    "e": "link",
+                    "t": "Delete this",
+                    "u": "https://reddit.com/message/compose/?to={username}&subject=delete&message=delete%20{comment_id}",
+                    "f": [
+                        [
+                            1,
+                            0,
+                            11
+                        ]
+                    ]
+                }
+            ]
+        }
+    ]
+}

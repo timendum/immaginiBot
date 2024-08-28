@@ -1,0 +1,23 @@
+[title1]
+alias = "alias1"
+image = "https://i.imgur.com/img1.mp4"
+
+[title2]
+images = ["https://i.imgur.com/img2.jpg", "https://i.imgur.com/img3.jpg"]
+hide = false
+
+[title3] 
+aliases = ["alias2", "alias3", "alias4"]
+image = "https://i.imgur.com/img2.gifv" # Comment
+
+[title4]
+image = ["https://i.imgur.com/img4.jpg", "reddit_id1"]
+
+[title5]
+aliases = ["alias5", "alias6", "alias7", "alias8"]
+hiddens = ["alias_hidden1", "alias_hidden2"]
+images = [["https://i.imgur.com/img5.jpg", "reddit_id2"]]
+
+[title6]
+hidden = "alias_hidden3"
+images = [["https://i.imgur.com/img6.jpg", "reddit_id3"], ["https://i.imgur.com/img5.jpg", "reddit_id2"]]
